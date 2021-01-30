@@ -1,0 +1,148 @@
+<!-- {% load static %} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <!-- <link rel="stylesheet" href="{% static '/css/main.css' %}"> -->
+    <!-- <script src="{% static '/js/static.js' %}"></script> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.js"></script>
+    <style>
+        .login {
+            background-color: #f44336;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 25%;
+            opacity: 0.9;
+          }
+          .main{
+            text-align: left;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 5px 10px 18px #888888;
+            border: 1px solid;
+            padding: 50px;
+            background-color: white;
+            height: auto;
+        }
+        .register {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 25%;
+            opacity: 0.9;
+          }
+    </style>
+    {% include 'accounts/header.html' %}
+</head>
+<body>
+    <div class="container">
+
+        
+
+        {% if status %}
+            <h3>The voting is not yet started</h3>
+            <h3>मतदान अद्याप सुरू झाले नाही</h3>
+            {{form.username}}
+        {% else %}
+            <h1>Voting started</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+            <div id="v1" class="main">
+                <p> 1.Click ON CAMERA and give access to page<br>
+                    2.For mobile maintain 25 to 30 cm distance from camera<br> 
+                    3.For desktop/Laptop maintain 45 to 50 cm distance from camera<br>
+                    4.Do not cover your face with any accessories like Mask,specs,goggle,scarf,etc<br>
+                    5.Enter valid Voter ID and Click on "Capture" button
+                </p>
+                    <div id="camera" style="height:auto;width:auto; text-align:left;"></div>
+                    <h4>Instruction to capture image</h4><br>
+                    
+                    <button onclick="setcam()">On camera</button>
+                    <div id="snapbutton" style="display:none;">
+                    <label for="">VoteID:</label><br>
+                    {{imgform.vid}}<br><br>
+                    <p style="color:red;">{{imgform.vid.errors}}</p>
+                    <input type="button" value="Take a Snap and Download Picture" id="btPic" onclick="takeSnapShot()" /> <br><br>
+                    <button onclick="nexta()" class="register" id="nea" style="display:none;">Next</button>
+                    </div>
+            </div>
+
+
+            <div  id="v2" class="main" style="display:none;">
+                {{imgform.limage}}<br><br>
+                <p style="color:red;">{{imgform.limage.errors}}</p>
+                <button  class="login" onclick="backa()">Back</button>
+                <button type="submit" class="register" style="float: right;">Submit</button>
+            </div>
+        {% endif %}
+            
+            
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+<script>
+    var vidname=""
+
+    
+    function setcam(){
+        Webcam.set({
+            width: 220,
+            height: 190,
+            image_format: 'jpeg',
+            jpeg_quality: 100
+        });
+        Webcam.attach('#camera');
+        document.getElementById('snapbutton').style.display = 'block';
+        //document.getElementById('vid').value=voterid;
+    }
+    
+        // TAKE A SNAPSHOT.
+        takeSnapShot = function () {
+            vid=document.getElementById('vid').value;
+                if(vid!=""){
+                    Webcam.snap(function (data_uri) {
+                        voterid=document.getElementById('vid').value
+                        downloadImage(voterid, data_uri);
+                    });
+                    document.getElementById('nea').style.display='block';
+                    }
+                else{
+                    alert("Please enter VoterID");
+                }
+                }
+    
+        // DOWNLOAD THE IMAGE.
+        downloadImage = function (name, datauri) {
+            name = voterid;
+            var a = document.createElement('a');
+            a.setAttribute('download', name + '.png');
+            a.setAttribute('href', datauri);
+            a.click();
+        }
+        function nexta(){
+            document.getElementById('v1').style.display ="none";
+            document.getElementById('v2').style.display="block";
+            //vidname=document.getElementById('vidname').value
+        }
+        function setvoterid(){
+            //document.getElementById('setvid').value=vidname
+        }
+        function backa(){
+            document.getElementById('v1').style.display ="block";
+            document.getElementById('v2').style.display="none";
+        }
+</script>
+</body>
+</html>
